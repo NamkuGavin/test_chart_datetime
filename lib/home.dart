@@ -15,6 +15,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isLoad = false;
   List<AOneDayReturn>? aOneDayReturns;
   Chartdatetimemodel? _model;
+  TooltipBehavior? toolTipBehaviour;
 
   Future getChart() async {
     try {
@@ -34,6 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    toolTipBehaviour = TooltipBehavior(enable: true);
     getChart();
     super.initState();
   }
@@ -44,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
         body: _isLoad
             ? Center(child: CircularProgressIndicator())
             : Container(
-          padding: EdgeInsets.all(50),
+                padding: EdgeInsets.all(50),
                 decoration: BoxDecoration(
                     color: Colors.white,
                     boxShadow: [
@@ -57,24 +59,34 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                     borderRadius: BorderRadius.circular(10)),
                 child: SfCartesianChart(
+                    tooltipBehavior: toolTipBehaviour,
                     primaryYAxis: NumericAxis(
-                      // visibleMinimum: _model!.minY.toDouble(),
-                      // visibleMaximum: _model!.maxY.toDouble(),
-                      minimum: _model!.minY.toDouble(),
-                      maximum: _model!.maxY.toDouble(),
-                      interval: _model!.intervalY.toDouble(),
-                    ),
+                        labelFormat: '{value}',
+                        // visibleMinimum: _model!.minY.toDouble(),
+                        // visibleMaximum: _model!.maxY.toDouble(),
+                        minimum: _model!.minY.toDouble(),
+                        maximum: _model!.maxY.toDouble(),
+                        interval: _model!.intervalY.toDouble(),
+                        majorGridLines: MajorGridLines(width: 0),
+                        minorGridLines: MinorGridLines(width: 0),
+                        title: AxisTitle(text: "return")),
                     primaryXAxis: DateTimeAxis(
-                      labelRotation: 90,
+                      labelRotation: 50,
                       interval: 6,
                       intervalType: DateTimeIntervalType.months,
+                      majorGridLines: MajorGridLines(width: 0),
+                      minorGridLines: MinorGridLines(width: 0),
                       // labelStyle: TextStyle(fontSize: 10),
                       // visibleMinimum: DateFormat("yyyy-MM-dd").parse(aOneDayReturns![0].date.toString()),
                       dateFormat: DateFormat("dd-MMM-yyyy"),
                     ),
                     series: <CartesianSeries>[
                       LineSeries<AOneDayReturn, DateTime>(
+                          enableTooltip: true,
+                          color: Colors.blue,
                           dataSource: aOneDayReturns!,
+                          emptyPointSettings:
+                              EmptyPointSettings(mode: EmptyPointMode.drop),
                           xValueMapper: (AOneDayReturn exp, _) => exp.date,
                           yValueMapper: (AOneDayReturn exp, _) =>
                               exp.aOneDayReturnReturn),
